@@ -33,7 +33,7 @@ const productionMongoClientOptions = {
 let pendingRequests = 0;
 
 // Wrapper function to handle pending requests
-const usePendingRequests = async <T>(operation: () => Promise<T>): Promise<T> => {
+const withPendingRequests = async <T>(operation: () => Promise<T>): Promise<T> => {
     pendingRequests++;
     let operationResult
     try {
@@ -79,35 +79,35 @@ export const getCollection = async (collectionName: CollectionNamesEnum): Promis
 
 export const findAll = async <T extends MongodItemType> (collection: Collection): Promise<T[]> => {
     Logger.debug("finding all in collection " + collection.collectionName);
-    return usePendingRequests(async () => {
+    return withPendingRequests(async () => {
         return await collection.find({}).toArray() as T[];
     });
 };
 
 export const findMany = async <T extends MongodItemType> (collection: Collection, params: object): Promise<T[]> => {
     Logger.debug("Finding with params " + JSON.stringify(params) + " in Collection " + collection.collectionName);
-    return usePendingRequests(async () => {
+    return withPendingRequests(async () => {
         return await collection.find(params).toArray() as T[];
     });
 }
 
 export const findOne = async <T extends MongodItemType> (collection: Collection, params: object): Promise<T> => {
     Logger.debug("Finding with params " + JSON.stringify(params) + " in Collection " + collection.collectionName);
-    return usePendingRequests(async () => {
+    return withPendingRequests(async () => {
         return await collection.findOne(params) as T;
     });
 }
 
 export const deleteById = async (collection: Collection, id: ObjectId): Promise<DeleteResult> => {
     Logger.debug("deleting item with id " + id + " in collection " + collection.collectionName);
-    return usePendingRequests(async () => {
+    return withPendingRequests(async () => {
         return await collection.deleteOne({_id: new ObjectId(id)});
     });
 };
 
 export const insertOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<InsertOneResult> => {
     Logger.debug("inserting item " + JSON.stringify(item) + " in collection " + collection.collectionName);
-    return usePendingRequests(async () => {
+    return withPendingRequests(async () => {
         return await collection.insertOne({...item});
     });
 };
@@ -120,7 +120,7 @@ export const updateOne = async <T extends MongodItemType> (collection: Collectio
         return null;
     }
 
-    return usePendingRequests(async () => {
+    return withPendingRequests(async () => {
         return await collection.updateOne(
             { _id: new ObjectId(_id) },
             { $set: updateData }
