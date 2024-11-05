@@ -8,7 +8,7 @@ enum LoggingLevelsEnum {
     NO_LOG = 4
 }
 
-export namespace Logger {
+export module Logger {
 
     const loggingLevel = process.env.NEXT_PUBLIC_LOGGING_LEVEL 
         ? Number(process.env.NEXT_PUBLIC_LOGGING_LEVEL) 
@@ -19,9 +19,9 @@ export namespace Logger {
     const showWarn = (): boolean => loggingLevel <= LoggingLevelsEnum.WARN;
     const showError = (): boolean => loggingLevel <= LoggingLevelsEnum.ERROR;
 
-    export const debug = async (message: any) => showDebug() && console.debug(`${DateTime.now().toISO()} [DEBUG] : ${message}`)
-    export const info = async (message: any) => showInfo() && console.info(`${DateTime.now().toISO()} [INFO] : ${message}`)
-    export const warn = async (message: any) => showWarn() && console.warn(`${DateTime.now().toISO()} [WARN] : ${message}`)
+    export const debug = async (message: unknown) => showDebug() && console.debug(`${DateTime.now().toISO()} [DEBUG] : ${message}`)
+    export const info = async (message: unknown) => showInfo() && console.info(`${DateTime.now().toISO()} [INFO] : ${message}`)
+    export const warn = async (message: unknown) => showWarn() && console.warn(`${DateTime.now().toISO()} [WARN] : ${message}`)
     export const error = (error: Error | string) => {
         if(!showError()) return;
         const message = typeof error === 'string' ? error : error.message;
