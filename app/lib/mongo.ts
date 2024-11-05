@@ -1,7 +1,7 @@
 import { Collection, Db, DeleteResult, InsertOneResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from "mongodb";
-import { Logger } from "./logger";
 import { assertDefined } from "./utils";
 import { MongodItemType } from "./types/database";
+import { debug } from "console";
 
 export enum CollectionNamesEnum {
     USER = 'user',
@@ -38,7 +38,7 @@ const withPendingRequests = async <T>(operation: () => Promise<T>): Promise<T> =
     let operationResult
     try {
         operationResult = await operation();
-        Logger.debug('operation result : ' + JSON.stringify(operationResult))
+        debug('operation result : ' + JSON.stringify(operationResult))
         return operationResult;
     } finally {
         pendingRequests--;
@@ -48,16 +48,16 @@ const withPendingRequests = async <T>(operation: () => Promise<T>): Promise<T> =
 
 // Closes the MongoClient and resets the client.
 const closeClient = async () => {
-    Logger.debug("trying to close client")
+    debug("trying to close client")
     if (client && pendingRequests === 0) {
         await client.close();
         client = undefined;
-        Logger.debug("client closed");
+        debug("client closed");
     } else if (client) {
-        Logger.debug("did not close client: requests still pending");
+        debug("did not close client: requests still pending");
         setTimeout(closeClient, 250);
     } else {
-        Logger.debug("did not close client: client already closed");
+        debug("did not close client: client already closed");
     }
 };
 
@@ -78,42 +78,42 @@ export const getDb = async (): Promise<Db> => (await getClient()).db(DB_NAME);
 export const getCollection = async (collectionName: CollectionNamesEnum): Promise<Collection> => (await getDb()).collection(collectionName);
 
 export const findAll = async <T extends MongodItemType> (collection: Collection): Promise<T[]> => {
-    Logger.debug("finding all in collection " + collection.collectionName);
+    debug("finding all in collection " + collection.collectionName);
     return withPendingRequests(async () => {
         return await collection.find({}).toArray() as T[];
     });
 };
 
 export const findMany = async <T extends MongodItemType> (collection: Collection, params: object): Promise<T[]> => {
-    Logger.debug("Finding with params " + JSON.stringify(params) + " in Collection " + collection.collectionName);
+    debug("Finding with params " + JSON.stringify(params) + " in Collection " + collection.collectionName);
     return withPendingRequests(async () => {
         return await collection.find(params).toArray() as T[];
     });
 }
 
 export const findOne = async <T extends MongodItemType> (collection: Collection, params: object): Promise<T> => {
-    Logger.debug("Finding with params " + JSON.stringify(params) + " in Collection " + collection.collectionName);
+    debug("Finding with params " + JSON.stringify(params) + " in Collection " + collection.collectionName);
     return withPendingRequests(async () => {
         return await collection.findOne(params) as T;
     });
 }
 
 export const deleteById = async (collection: Collection, id: ObjectId): Promise<DeleteResult> => {
-    Logger.debug("deleting item with id " + id + " in collection " + collection.collectionName);
+    debug("deleting item with id " + id + " in collection " + collection.collectionName);
     return withPendingRequests(async () => {
         return await collection.deleteOne({_id: new ObjectId(id)});
     });
 };
 
 export const insertOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<InsertOneResult> => {
-    Logger.debug("inserting item " + JSON.stringify(item) + " in collection " + collection.collectionName);
+    debug("inserting item " + JSON.stringify(item) + " in collection " + collection.collectionName);
     return withPendingRequests(async () => {
         return await collection.insertOne({...item});
     });
 };
 
 export const updateOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<null | UpdateResult> => {
-    Logger.debug("updating item " + JSON.stringify(item) + " in collection " + collection.collectionName);
+    debug("updating item " + JSON.stringify(item) + " in collection " + collection.collectionName);
     const { _id, ...updateData } = item; // Destructure to separate _id from the rest of the data
     
     if(!_id) {
