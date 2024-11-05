@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from 'bcrypt';
 import { APIResponseStatuses } from "@/app/lib/enums";
 
-export default async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
     
     try {
         const user = await parseBody<User>(req);
