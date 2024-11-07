@@ -30,6 +30,12 @@ export class APINotFoundError extends APIError {
     }
 }
 
+export class APIConflictError extends APIError {
+    constructor(message: string) {
+        super(message, APIResponseStatuses.CONFLICT);
+    }
+}
+
 export class APIUnprocessableEntityError extends APIError {
     constructor(message: string) {
         super(message, APIResponseStatuses.UNPROCESSABLE_ENTITY);

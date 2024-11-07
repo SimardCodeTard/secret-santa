@@ -31,7 +31,7 @@ export async function parseBody<T = unknown>(req: Request): Promise<T> {
     }
 }
 
-export const isDefined = (toCheck: unknown) => toCheck !== undefined && toCheck !== null && toCheck !== '' && typeof toCheck === 'number' ? !isNaN(toCheck as number) : true;
+export const isDefined = (toCheck: unknown) => toCheck !== undefined && toCheck !== null && toCheck !== '';
 
 export const assertDefined = (toAssert: unknown) => {
     assert(isDefined(toAssert));

@@ -42,7 +42,7 @@ const withPendingRequests = async <T>(operation: () => Promise<T>): Promise<T> =
         return operationResult;
     } finally {
         pendingRequests--;
-        closeClient();
+        await closeClient();
     }
 };
 
@@ -55,7 +55,6 @@ const closeClient = async () => {
         debug("client closed");
     } else if (client) {
         debug("did not close client: requests still pending");
-        setTimeout(closeClient, 250);
     } else {
         debug("did not close client: client already closed");
     }

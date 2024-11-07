@@ -11,10 +11,10 @@ export default function Home() {
       </header>
 
       <main className={styles.main}>
-        <div className={styles.content}>
+        <div className={styles.content + ' card'}>
           <h1>Secret Santa</h1>
           <Image src={'/illustrations/santa.svg'} height={200} width={200} alt=""></Image>
-          <button className={styles.start_button}> <Link href={'/login'}>Démarrer</Link></button>
+          <Link href={'/login'} className={styles.button_link}><button className={styles.start_button}>Démarrer</button></Link>
         </div>
       </main>
       
